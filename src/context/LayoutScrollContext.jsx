@@ -29,6 +29,15 @@ export function LayoutScrollProvider({ children }) {
   /** Add invoice: mirror Preview / Save / Send in header when main scroll passes threshold */
   const [showAddInvoiceHeaderActions, setShowAddInvoiceHeaderActions] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+
+  const toggleSidebar = useCallback(() => {
+    setSidebarOpen((open) => !open);
+  }, []);
+
+  const closeSidebar = useCallback(() => {
+    setSidebarOpen(false);
+  }, []);
 
   const onMainScroll = useCallback((e) => {
     setIsScrolled(e.currentTarget.scrollTop > SCROLL_CONDENSED_THRESHOLD_PX);
@@ -41,6 +50,7 @@ export function LayoutScrollProvider({ children }) {
     setAddInvoiceFormActionsInView(true);
     setShowAddInvoiceHeaderActions(false);
     setSearchQuery("");
+    setSidebarOpen(false);
     const el = mainScrollRef.current;
     if (el) el.scrollTop = 0;
   }, []);
@@ -49,6 +59,15 @@ export function LayoutScrollProvider({ children }) {
   useLayoutEffect(() => {
     resetMainScroll();
   }, [location.pathname, resetMainScroll]);
+
+  useEffect(() => {
+    if (!sidebarOpen) return undefined;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = prev;
+    };
+  }, [sidebarOpen]);
 
   useEffect(() => {
     if (location.pathname !== "/invoices") {
@@ -73,6 +92,9 @@ export function LayoutScrollProvider({ children }) {
       setShowAddInvoiceHeaderActions,
       searchQuery,
       setSearchQuery,
+      sidebarOpen,
+      toggleSidebar,
+      closeSidebar,
     }),
     [
       isScrolled,
@@ -83,6 +105,9 @@ export function LayoutScrollProvider({ children }) {
       addInvoiceFormActionsInView,
       showAddInvoiceHeaderActions,
       searchQuery,
+      sidebarOpen,
+      toggleSidebar,
+      closeSidebar,
     ],
   );
 

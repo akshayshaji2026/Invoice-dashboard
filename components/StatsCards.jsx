@@ -51,7 +51,7 @@ export default function StatsCards() {
   ];
 
   return (
-    <section className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
+    <section className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
       {statsCardsData.map((card) => (
         <StatCard key={card.id} card={card} />
       ))}
@@ -63,7 +63,7 @@ function StatCard({ card }) {
   const isTrendUp = card.trendDirection === "up";
 
   return (
-    <article className="relative rounded-[16px] border border-[#ECECEC] bg-white px-5 pb-3.5 pt-4 shadow-[0px_1px_8px_rgba(54,76,215,0.1)]">
+    <article className="relative rounded-[16px] border border-[#ECECEC] bg-white px-4 pb-3.5 pt-4 shadow-[0px_1px_8px_rgba(54,76,215,0.1)] sm:px-5">
       <div className="mb-3 flex items-start justify-between">
         <p className="text-sm font-medium text-text-label">{card.title}</p>
         <div
@@ -76,7 +76,7 @@ function StatCard({ card }) {
         </div>
       </div>
 
-      <p className="mb-3 text-[24px] font-semibold leading-none tracking-tight text-text-heading">
+      <p className="mb-3 text-base font-semibold leading-none tracking-tight text-text-heading md:text-xl lg:text-2xl">
         {formatValue(card.value, card.currency)}
       </p>
 

@@ -1,82 +1,133 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { NavLink } from "react-router-dom";
 import InvoDashLogoMark from "./InvoDashLogoMark.jsx";
+import { useLayoutScroll } from "../src/context/LayoutScrollContext.jsx";
 
 const mainNavItems = [
   { id: "dashboard", label: "Dashboard", to: "/", end: true, icon: DashboardIcon },
   { id: "invoices", label: "Invoices", to: "/invoices", end: false, icon: InvoiceIcon },
+  { id: "settings", label: "Settings", to: "/settings", end: false, icon: SettingsIcon },
 ];
 
+/**
+ * < lg: off-canvas drawer (w-64).
+ * lg–xl: icon-only rail (w-20) with hover tooltips.
+ * xl+: full labels (w-64).
+ */
 export default function SideNavigation() {
+  const { sidebarOpen, closeSidebar } = useLayoutScroll();
+
+  useEffect(() => {
+    const onKeyDown = (e) => {
+      if (e.key === "Escape") closeSidebar();
+    };
+    if (!sidebarOpen) return undefined;
+    document.addEventListener("keydown", onKeyDown);
+    return () => document.removeEventListener("keydown", onKeyDown);
+  }, [sidebarOpen, closeSidebar]);
+
   return (
-    <aside className="fixed left-6 top-6 z-50 h-[calc(100vh-48px)] w-64 overflow-hidden rounded-2xl bg-gradient-to-b from-[#2D325A] to-[#1A1E3B] p-6 shadow-2xl">
-      <div className="flex h-full flex-col">
-        <BrandSection />
-        <MenuSection />
-      </div>
-    </aside>
+    <>
+      <button
+        type="button"
+        aria-label="Close navigation menu"
+        onClick={closeSidebar}
+        className={[
+          "fixed inset-0 z-40 bg-[#1A1E3B]/50 backdrop-blur-[2px] transition-opacity duration-300 lg:hidden",
+          sidebarOpen ? "pointer-events-auto opacity-100" : "pointer-events-none opacity-0",
+        ].join(" ")}
+      />
+
+      <aside
+        id="app-sidebar"
+        className={[
+          "fixed inset-y-0 left-0 z-50 flex flex-col overflow-hidden bg-gradient-to-b from-[#2D325A] to-[#1A1E3B] shadow-2xl transition-[width,transform] duration-300 ease-out",
+          "w-64 p-6 lg:w-20 lg:p-3 xl:w-64 xl:p-6",
+          "lg:translate-x-0",
+          sidebarOpen ? "translate-x-0" : "-translate-x-full",
+        ].join(" ")}
+      >
+        <div className="flex h-full flex-col">
+          <BrandSection />
+          <MenuSection onNavigate={closeSidebar} />
+        </div>
+      </aside>
+    </>
   );
 }
 
 function BrandSection() {
   return (
     <div>
-      <div className="flex items-center gap-3.5">
+      <div className="flex items-center gap-3.5 lg:justify-center lg:gap-0 xl:justify-start xl:gap-3.5">
         <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-white/30 bg-white/5 p-0.5">
           <InvoDashLogoMark variant="onBlue" className="h-9 w-9" title="Invo Dash" />
         </div>
-        <h2 className="text-xl font-bold tracking-tight text-white">Invo Dash</h2>
+        <h2 className="text-base font-bold tracking-tight text-white md:text-xl lg:sr-only xl:not-sr-only xl:text-xl">
+          Invo Dash
+        </h2>
       </div>
 
-      <hr className="mb-6 mt-6 border-white/10" />
+      <hr className="mb-6 mt-6 border-white/10 lg:mb-4 lg:mt-4 xl:mb-6 xl:mt-6" />
 
-      <p className="mb-4 text-[11px] font-normal tracking-[1.5px] text-white/40">MAIN MENU</p>
+      <p className="mb-4 text-[11px] font-normal tracking-[1.5px] text-white/40 lg:hidden xl:mb-4 xl:block">
+        MAIN MENU
+      </p>
     </div>
   );
 }
 
-function MenuSection() {
+function MenuSection({ onNavigate }) {
+  const closeOnNavigate = () => {
+    if (typeof window !== "undefined" && window.matchMedia("(max-width: 1023px)").matches) {
+      onNavigate?.();
+    }
+  };
+
   return (
     <nav className="space-y-2">
-      {mainNavItems.map((item) => {
-        const Icon = item.icon;
-        return (
-          <NavLink
-            key={item.id}
-            to={item.to}
-            end={item.end}
-            className={({ isActive }) =>
-              `group flex w-full items-center gap-3 rounded-lg px-4 py-3 text-left outline-none transition-all duration-200 focus-visible:ring-2 focus-visible:ring-white/35 ${
-                isActive ? "bg-[#2F51A1] text-white shadow-lg" : "text-white/60 hover:bg-white/5 hover:text-white"
-              }`
-            }
-          >
-            {({ isActive }) => (
-              <>
-                <Icon active={isActive} />
-                <span className={`text-sm ${isActive ? "font-bold" : "font-normal"}`}>{item.label}</span>
-              </>
-            )}
-          </NavLink>
-        );
-      })}
+      {mainNavItems.map((item) => (
+        <NavItem key={item.id} item={item} onNavigate={closeOnNavigate} />
+      ))}
+    </nav>
+  );
+}
 
+function NavItem({ item, onNavigate }) {
+  const Icon = item.icon;
+
+  return (
+    <div className="group/nav relative">
       <NavLink
-        to="/settings"
+        to={item.to}
+        end={item.end}
+        onClick={onNavigate}
+        title={item.label}
         className={({ isActive }) =>
-          `group flex w-full items-center gap-3 rounded-lg px-4 py-3 text-left outline-none transition-all duration-200 focus-visible:ring-2 focus-visible:ring-white/35 ${
+          `flex w-full items-center gap-3 rounded-lg py-3 text-left outline-none transition-all duration-200 focus-visible:ring-2 focus-visible:ring-white/35 lg:justify-center lg:gap-0 lg:px-2 xl:justify-start xl:gap-3 xl:px-4 ${
             isActive ? "bg-[#2F51A1] text-white shadow-lg" : "text-white/60 hover:bg-white/5 hover:text-white"
           }`
         }
       >
         {({ isActive }) => (
           <>
-            <SettingsIcon active={isActive} />
-            <span className={`text-sm ${isActive ? "font-bold" : "font-normal"}`}>Settings</span>
+            <Icon active={isActive} />
+            <span
+              className={`text-sm lg:sr-only xl:not-sr-only ${isActive ? "font-bold" : "font-normal"}`}
+            >
+              {item.label}
+            </span>
           </>
         )}
       </NavLink>
-    </nav>
+
+      <span
+        role="tooltip"
+        className="pointer-events-none absolute left-full top-1/2 z-[60] ml-2 hidden -translate-y-1/2 whitespace-nowrap rounded-md bg-[#101428] px-2.5 py-1.5 text-xs font-medium text-white opacity-0 shadow-lg transition-opacity duration-150 group-hover/nav:opacity-100 lg:block xl:hidden"
+      >
+        {item.label}
+      </span>
+    </div>
   );
 }
 

@@ -396,8 +396,8 @@ export default function InvoicePreviewPage() {
         <SideNavigation />
       </div>
 
-      <div className="ml-[280px] flex h-screen min-h-0 min-w-0 flex-1 flex-col overflow-hidden print:ml-0 print:h-auto print:overflow-visible">
-        <div className="invoice-preview-chrome shrink-0 px-6 pt-6 print:hidden">
+      <div className="ml-0 flex h-screen min-h-0 min-w-0 flex-1 flex-col overflow-hidden print:ml-0 print:h-auto print:overflow-visible lg:ml-20 xl:ml-64">
+        <div className="invoice-preview-chrome shrink-0 px-4 pt-4 print:hidden md:px-6 md:pt-6 lg:px-8 lg:pt-8">
           <header className={previewPageHeaderShellClass}>
             <div className="flex min-w-0 flex-1 items-center gap-4">
               <button
@@ -433,7 +433,7 @@ export default function InvoicePreviewPage() {
           </header>
         </div>
 
-        <div className="h-[calc(100vh-7.25rem)] min-h-0 w-full overflow-x-auto overflow-y-auto px-6 pb-6 pt-2 print:h-auto print:overflow-visible print:px-0 print:pb-0 print:pt-0">
+        <div className="min-h-0 w-full flex-1 overflow-x-auto overflow-y-auto px-4 pb-4 pt-2 print:h-auto print:overflow-visible print:px-0 print:pb-0 print:pt-0 md:px-6 md:pb-6 lg:px-8 lg:pb-8">
           <article
             id="invoice-paper"
             data-invoice-export="true"

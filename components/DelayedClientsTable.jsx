@@ -20,14 +20,15 @@ export default function DelayedClientsTable() {
   const hasSearch = searchQuery.trim().length > 0;
 
   return (
-    <section className="relative rounded-[16px] bg-white p-5 border border-[#ECECEC] shadow-[0px_1px_8px_rgba(54,76,215,0.1)]">
+    <section className="relative rounded-[16px] border border-[#ECECEC] bg-white p-4 shadow-[0px_1px_8px_rgba(54,76,215,0.1)] sm:p-5">
       <header className="mb-4">
-        <h3 className="text-lg font-semibold text-text-primary">
+        <h3 className="text-base font-semibold text-text-primary md:text-lg">
           Top Delayed Clients
         </h3>
       </header>
 
-      <div className="overflow-hidden rounded-xl border border-[#ECECEC]">
+      <div className="overflow-x-auto rounded-xl border border-[#ECECEC]">
+        <div className="min-w-[560px]">
         <div className="grid grid-cols-[minmax(0,1.3fr)_minmax(0,1fr)_minmax(0,0.7fr)_minmax(0,0.8fr)] gap-x-6 bg-[#EFEFFA] px-4 py-3 text-xs font-medium text-[#575E78]">
           <div>Client</div>
           <div className="text-right">Pending Amount</div>
@@ -48,6 +49,7 @@ export default function DelayedClientsTable() {
               isLast={index === filteredRows.length - 1}
             />
           ))}
+        </div>
         </div>
       </div>
     </section>

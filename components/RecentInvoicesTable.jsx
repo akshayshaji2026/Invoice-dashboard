@@ -32,20 +32,26 @@ export default function RecentInvoicesTable() {
   const hasSearch = searchQuery.trim().length > 0;
 
   return (
-    <section className="relative w-full min-w-0 rounded-[16px] border border-[#ECECEC] bg-white p-5 font-['Inter',ui-sans-serif,system-ui,sans-serif] shadow-[0px_1px_8px_rgba(54,76,215,0.1)]">
-      <header className="mb-4 flex items-start justify-between">
-        <div>
-          <h3 className="text-[18px] leading-[1.2] font-semibold tracking-[-0.03em] text-[#17171B] font-['Inter',ui-sans-serif,system-ui,sans-serif]">
-            Recent Invoice
+    <section className="relative w-full min-w-0 rounded-[16px] border border-[#ECECEC] bg-white p-4 font-['Inter',ui-sans-serif,system-ui,sans-serif] shadow-[0px_1px_8px_rgba(54,76,215,0.1)] sm:p-5">
+      <header className="mb-4">
+        <div className="flex items-center justify-between gap-3">
+          <h3 className="min-w-0 text-base font-semibold leading-[1.2] tracking-[-0.03em] text-[#17171B] font-['Inter',ui-sans-serif,system-ui,sans-serif] md:text-lg">
+            Recent Invoices
           </h3>
-          <p className="mt-1 text-sm text-[#B1B1C2]">Breakdown By Payment Status</p>
+          <Link
+            to="/invoices"
+            className="shrink-0 text-sm font-medium text-[#2F51A1] transition-all duration-200 hover:opacity-80"
+          >
+            View All
+          </Link>
         </div>
-        <Link to="/invoices" className="text-sm font-medium text-[#2F51A1] transition-all duration-200 hover:opacity-80">
-          View All
-        </Link>
+        <p className="dashboard-card-subtitle mt-1 truncate">
+          Latest billing activity across your account
+        </p>
       </header>
 
-      <div className="overflow-hidden rounded-xl border border-[#ECECEC]">
+      <div className="overflow-x-auto rounded-xl border border-[#ECECEC]">
+        <div className="min-w-[720px]">
         <div className="grid grid-cols-[0.9fr_1.3fr_1fr_1fr_0.8fr_0.8fr] gap-x-6 bg-[#EFEFFA] px-4 py-3 text-xs font-medium text-[#575E78]">
           <div>Invoice ID</div>
           <div>Client</div>
@@ -135,6 +141,7 @@ export default function RecentInvoicesTable() {
               </div>
             );
           })}
+        </div>
         </div>
       </div>
     </section>

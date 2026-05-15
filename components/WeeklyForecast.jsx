@@ -9,7 +9,7 @@ export default function WeeklyForecast() {
         <h3 className="text-[16px] font-semibold leading-tight tracking-[-0.02em] text-[#17171B]">
           Weekly Cash Forecast
         </h3>
-        <p className="mt-0.5 text-xs text-[#B1B1C2]">Next 4 expected payouts</p>
+        <p className="dashboard-card-subtitle truncate">Next 4 expected payouts</p>
       </header>
 
       <ul className="flex min-h-0 flex-1 flex-col justify-start gap-2">

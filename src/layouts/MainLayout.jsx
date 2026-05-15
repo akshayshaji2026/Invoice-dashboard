@@ -15,20 +15,20 @@ export default function MainLayout({
   const { mainScrollRef, onMainScroll } = useLayoutScroll();
 
   return (
-    <div className="flex h-screen min-h-0 overflow-x-clip overflow-y-visible bg-[#F9F9FF]">
+    <div className="flex h-screen min-h-0 overflow-x-clip bg-[#F9F9FF]">
       <SideNavigation />
 
-      <div className="ml-[280px] flex h-screen min-h-0 min-w-0 flex-1 flex-col overflow-visible">
-        <div className="shrink-0 px-6 pt-6">
+      <div className="ml-0 flex min-h-0 min-w-0 flex-1 flex-col lg:ml-20 xl:ml-64">
+        <div className="sticky top-0 z-40 shrink-0 bg-[#F9F9FF]/95 px-4 pb-2 pt-4 backdrop-blur-sm md:px-8 md:pt-6">
           <Header title={title} showAddInvoice={showAddInvoice} />
         </div>
 
         <div
           ref={mainScrollRef}
           onScroll={onMainScroll}
-          className="h-[calc(100vh-7.25rem)] min-h-0 w-full overflow-x-clip overflow-y-auto px-6 pb-6 pt-2"
+          className="min-h-0 w-full min-w-0 flex-1 overflow-x-clip overflow-y-auto px-4 pb-4 pt-2 md:px-8 md:pb-8"
         >
-          <div className="mx-auto max-w-[1400px] space-y-6 overflow-visible">
+          <div className="mx-auto w-full min-w-0 max-w-[1400px] space-y-4 md:space-y-6">
             {children}
           </div>
         </div>
@@ -36,4 +36,3 @@ export default function MainLayout({
     </div>
   );
 }
-

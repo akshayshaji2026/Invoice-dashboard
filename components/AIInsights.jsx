@@ -137,18 +137,18 @@ function InsightCard({ insight, onOpenAction, validInvoiceIds }) {
               )}
             </p>
 
-            <div className="mt-2 flex items-center justify-between">
+            <div className="mt-2 flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
               <button
                 type="button"
                 onClick={() => onOpenAction(insight)}
-                className={`w-fit h-8 px-3.5 flex items-center gap-3.5 rounded-lg ${config.btnBg} transition-opacity hover:opacity-80`}
+                className={`flex h-9 w-full items-center justify-between gap-2 rounded-lg px-3.5 md:h-8 md:w-fit ${config.btnBg} transition-opacity hover:opacity-80`}
               >
                 <span className={`text-[13px] font-normal font-['Inter'] ${config.actionColor}`}>
                   {insight.actionLabel}
                 </span>
-                <ChevronRight size={14} className={config.actionColor} />
+                <ChevronRight size={14} className={`shrink-0 ${config.actionColor}`} />
               </button>
-              <span className="text-[12px] font-normal text-[#B2B2B2] font-['Inter']">
+              <span className="hidden shrink-0 text-[12px] font-normal text-[#B2B2B2] font-['Inter'] md:inline">
                 {insight.time || "11:00 PM"}
               </span>
             </div>

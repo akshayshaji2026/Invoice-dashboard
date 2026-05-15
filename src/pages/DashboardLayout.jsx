@@ -27,15 +27,15 @@ const sidebarStickyStyle = {
 export default function DashboardLayout() {
   return (
     <div className="w-full min-w-0 overflow-visible">
-      <div className="grid w-full grid-cols-12 items-start gap-6 overflow-visible">
-        <div className="col-span-12 min-h-0 min-w-0 space-y-6 lg:col-span-8">
+      <div className="grid w-full grid-cols-12 items-start gap-4 overflow-visible md:gap-6">
+        <div className="col-span-12 min-h-0 min-w-0 space-y-6 lg:col-span-7 xl:col-span-8">
           <RevenueChart />
           <InvoiceStatusDonut />
           <DelayedClientsTable />
         </div>
 
         <div
-          className="col-span-12 flex min-h-0 min-w-0 flex-col lg:col-span-4"
+          className="col-span-12 flex min-h-0 min-w-0 flex-col lg:col-span-5 lg:min-w-[240px] xl:col-span-4 xl:min-w-0"
           style={sidebarColumnStyle}
         >
           <div

@@ -1,11 +1,9 @@
 import React, { useEffect, useRef, useState } from "react";
-import { ArrowLeft, ChevronDown, Download, FilePlus2, ListFilter, Search, Send } from "lucide-react";
+import { ArrowLeft, ChevronDown, Download, FilePlus2, ListFilter, Search } from "lucide-react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useLayoutScroll } from "../src/context/LayoutScrollContext.jsx";
-import { useDashboardModal } from "../src/context/DashboardModalContext.jsx";
-import { useInvoices } from "../src/context/InvoiceContext.jsx";
 import { useSettings } from "../src/context/SettingsContext.jsx";
-import { sendReminderBulkModalPayload } from "../src/pages/dashboardModalContent.jsx";
+import { DashboardHeaderCTAs } from "./DashboardCTAs.jsx";
 
 export default function Header({ title = "Dashboard", showAddInvoice = true }) {
   const {
@@ -31,8 +29,10 @@ export default function Header({ title = "Dashboard", showAddInvoice = true }) {
     addInvoiceFormActionsInView,
   };
 
+  const showDashboardHeaderCtas = isDashboard && showAddInvoice && isScrolled;
+
   return (
-    <header className="relative z-[60] flex w-full min-w-0 items-center gap-8 rounded-[16px] border border-[#ECECEC]/90 bg-white/80 p-5 shadow-[0px_1px_8px_rgba(54,76,215,0.1)] backdrop-blur-md backdrop-saturate-150">
+    <header className="relative flex w-full min-w-0 items-center gap-2 rounded-[16px] border border-[#ECECEC]/90 bg-white/80 p-3 shadow-[0px_1px_8px_rgba(54,76,215,0.1)] backdrop-blur-md backdrop-saturate-150 sm:gap-3 sm:p-4">
       <LeftSection
         title={title}
         isAddInvoiceRoute={isAddInvoiceRoute}
@@ -42,7 +42,10 @@ export default function Header({ title = "Dashboard", showAddInvoice = true }) {
 
       <HeaderSearchActionsGroup {...headerToolbarProps} />
 
-      <HeaderProfileTrailing />
+      <div className="ml-auto flex shrink-0 items-center gap-1.5 overflow-visible sm:gap-2">
+        {showDashboardHeaderCtas ? <DashboardHeaderCTAs /> : null}
+        <HeaderProfileTrailing />
+      </div>
     </header>
   );
 }
@@ -50,13 +53,17 @@ export default function Header({ title = "Dashboard", showAddInvoice = true }) {
 function LeftSection({ title, isAddInvoiceRoute, isInvoicesListing, isScrolled }) {
   const navigate = useNavigate();
   const location = useLocation();
+  const { toggleSidebar, sidebarOpen } = useLayoutScroll();
   const isSettingsRoute = location.pathname === "/settings";
   const showBack =
     (isAddInvoiceRoute && isScrolled) || (isInvoicesListing && isScrolled) || (isSettingsRoute && isScrolled);
   const showHamburger = !showBack;
 
   const handleLeftClick = () => {
-    if (!showBack) return;
+    if (!showBack) {
+      toggleSidebar();
+      return;
+    }
     if (isAddInvoiceRoute && isScrolled) {
       navigate("/invoices");
       return;
@@ -79,12 +86,17 @@ function LeftSection({ title, isAddInvoiceRoute, isInvoicesListing, isScrolled }
     : "Open menu";
 
   return (
-    <div className="flex min-w-[200px] max-w-[min(40vw,320px)] shrink-0 items-center gap-4">
+    <div className="flex min-w-0 shrink-0 items-center gap-2 sm:gap-3">
       <button
         type="button"
         onClick={handleLeftClick}
-        className="relative h-6 w-6 shrink-0 rounded-md text-[#828BB9] hover:opacity-80 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/25 focus-visible:ring-offset-2"
+        className={[
+          "relative h-6 w-6 shrink-0 rounded-md text-[#828BB9] hover:opacity-80 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/25 focus-visible:ring-offset-2",
+          showHamburger ? "lg:hidden" : "",
+        ].join(" ")}
         aria-label={leftAriaLabel}
+        aria-controls={showHamburger ? "app-sidebar" : undefined}
+        aria-expanded={showHamburger ? sidebarOpen : undefined}
       >
         <span
           className={`absolute inset-0 flex items-center justify-center transition-all duration-300 ease-out ${
@@ -107,7 +119,7 @@ function LeftSection({ title, isAddInvoiceRoute, isInvoicesListing, isScrolled }
           <ArrowLeft className="h-6 w-6" strokeWidth={1.8} aria-hidden />
         </span>
       </button>
-      <h1 className="min-w-0 overflow-hidden text-ellipsis whitespace-nowrap text-[20px] font-medium leading-none text-text-primary">
+      <h1 className="min-w-0 max-w-[9rem] overflow-hidden text-ellipsis whitespace-nowrap text-base font-medium leading-none text-text-primary sm:max-w-[12rem] md:max-w-none md:text-lg lg:text-xl">
         {title}
       </h1>
     </div>
@@ -195,14 +207,6 @@ function useHeaderToolbarState({
   const isSettingsRoute = location.pathname === "/settings";
   const isAddInvoiceRoute = location.pathname === "/add-invoice";
 
-  const dashboardCondensed =
-    isDashboard && showAddInvoice ? (
-      <>
-        <SendReminderButton />
-        <AddInvoiceNavButton />
-      </>
-    ) : null;
-
   const invoicesCondensed = isInvoicesListing ? (
     <InvoiceListingCondensedActions actions={invoiceListingHeaderActions} />
   ) : null;
@@ -212,8 +216,6 @@ function useHeaderToolbarState({
     compactToolbarChildren = formCondensedSlot;
   } else if (isInvoicesListing && invoiceListingHeaderActions) {
     compactToolbarChildren = invoicesCondensed;
-  } else if (dashboardCondensed) {
-    compactToolbarChildren = dashboardCondensed;
   }
 
   const condensedSlotExpanded =
@@ -234,49 +236,11 @@ function useHeaderToolbarState({
   };
 }
 
-function SendReminderButton() {
-  const { openModal } = useDashboardModal();
-  const { invoices, overdueReminderCount, bulkOverdueRemindersAcknowledged } = useInvoices();
-  const { settings } = useSettings();
-  const reminderBadgeCount =
-    settings.preferences.aiRemindersEnabled && !bulkOverdueRemindersAcknowledged ? overdueReminderCount : 0;
-
-  return (
-    <button
-      type="button"
-      onClick={() => openModal(sendReminderBulkModalPayload(invoices, 8))}
-      className="h-9 shrink-0 rounded-xl bg-[#FFF8F1] px-3 flex items-center gap-1.5 text-[#D97E1C] text-xs font-normal hover:opacity-90 transition sm:text-sm"
-    >
-      <Send className="h-3.5 w-3.5 sm:h-4 sm:w-4" aria-hidden />
-      <span className="hidden sm:inline">Send Reminder</span>
-      <span className="sm:hidden">Reminder</span>
-      {reminderBadgeCount > 0 ? (
-        <span className="inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-[#CE2222] px-1 text-[10px] font-medium leading-none text-white">
-          {reminderBadgeCount}
-        </span>
-      ) : null}
-    </button>
-  );
-}
-
-function AddInvoiceNavButton() {
-  const navigate = useNavigate();
-  return (
-    <button
-      type="button"
-      onClick={() => navigate("/add-invoice")}
-      className="h-9 shrink-0 rounded-xl bg-[#2F51A1] px-3 flex items-center gap-1.5 text-white text-xs font-normal transition hover:bg-[#254278] sm:px-3.5 sm:text-sm"
-    >
-      <FilePlus2 className="h-3.5 w-3.5 sm:h-4 sm:w-4" aria-hidden />
-      <span>Add Invoice</span>
-    </button>
-  );
-}
-
-/** Search + condensed actions: search left, buttons slide in on the right. */
+/** Search + condensed actions (non-dashboard routes). */
 function HeaderSearchActionsGroup(props) {
+  const toolbarProps = props;
   const { compactToolbarChildren, condensedSlotExpanded, formMirrorInHeader, isAddInvoiceRoute } =
-    useHeaderToolbarState(props);
+    useHeaderToolbarState(toolbarProps);
 
   let actionContent = null;
 
@@ -305,7 +269,7 @@ function HeaderSearchActionsGroup(props) {
   }
 
   return (
-    <div className="flex min-w-0 flex-1 items-center justify-end gap-4">
+    <div className="flex min-w-0 flex-1 items-center justify-end gap-2 sm:gap-3">
       <SearchBar />
       {actionContent}
     </div>
@@ -440,7 +404,7 @@ function SearchBar() {
   const { searchQuery, setSearchQuery } = useLayoutScroll();
 
   return (
-    <div className="min-w-0 max-w-[400px] flex-1">
+    <div className="hidden min-w-0 w-full max-w-full flex-1 md:block md:max-w-[min(100%,400px)]">
       <div className="flex h-10 w-full items-center gap-2 rounded-2xl border border-[#ECECEC] bg-white px-4 shadow-[0px_0px_2px_rgba(0,0,0,0.04)] transition-[box-shadow,border-color] duration-200 hover:border-[#E4E4E7] focus-within:border-[#2F51A1] focus-within:shadow-[0_0_0_3px_rgba(47,81,161,0.12)]">
         <Search className="h-5 w-5 shrink-0 text-[#828BB9]" strokeWidth={1.6} aria-hidden />
         <input
