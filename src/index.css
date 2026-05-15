@@ -1,0 +1,331 @@
+@import "tailwindcss";
+
+/* Primary actions = sidebar active pill (NavLink). */
+:root {
+  --color-primary: #2f51a1;
+  --color-primary-hover: #254278;
+  --color-primary-foreground: #ffffff;
+}
+
+@layer base {
+  html,
+  body {
+    height: 100%;
+    overflow: hidden;
+  }
+
+  #root {
+    height: 100%;
+  }
+
+  body {
+    font-family: Inter, sans-serif;
+    background-color: #f9f9ff;
+    color: #1c1c1c;
+  }
+
+  @media print {
+    /* Maximize printable area; browser header/footer (URL, date) is a print-dialog setting in most browsers */
+    @page {
+      size: A4;
+      margin: 0mm;
+    }
+
+    html,
+    body {
+      height: auto;
+      overflow: visible;
+      background: #fff;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+
+    #root {
+      height: auto;
+      overflow: visible;
+    }
+
+    /* When printing from Invoice Preview: only the invoice sheet */
+    body.printing * {
+      visibility: hidden;
+    }
+
+    body.printing #invoice-paper,
+    body.printing #invoice-paper * {
+      visibility: visible;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+
+    body.printing #invoice-paper {
+      position: relative;
+      left: 0;
+      top: 0;
+      box-sizing: border-box;
+      width: 210mm;
+      max-width: 210mm;
+      min-height: 297mm;
+      height: auto;
+      overflow: visible !important;
+      page-break-after: auto;
+      break-after: auto;
+    }
+
+    body.printing .invoice-preview-chrome {
+      display: none !important;
+    }
+
+    #invoice-paper {
+      box-sizing: border-box;
+      min-height: 297mm;
+      height: auto;
+      overflow: visible;
+      page-break-after: auto;
+      break-after: auto;
+    }
+
+    #invoice-paper .invoice-print-bill-meta-row {
+      break-inside: avoid;
+      page-break-inside: avoid;
+    }
+
+    #invoice-paper .invoice-print-line-items {
+      break-inside: auto;
+      page-break-inside: auto;
+    }
+
+    #invoice-paper tbody.invoice-print-table-body {
+      break-inside: auto;
+      page-break-inside: auto;
+    }
+
+    #invoice-paper .invoice-print-grand-total {
+      -webkit-print-color-adjust: exact !important;
+      print-color-adjust: exact !important;
+    }
+
+    /* Blue letterhead: fixed print height + forced colors */
+    #invoice-paper .invoice-print-blue-header {
+      position: relative;
+      width: 100%;
+      min-height: 200px;
+      box-sizing: border-box;
+      overflow: visible;
+      -webkit-print-color-adjust: exact !important;
+      print-color-adjust: exact !important;
+    }
+
+    #invoice-paper .invoice-print-blue-header .invoice-print-header-inner {
+      position: relative;
+      z-index: 10;
+      box-sizing: border-box;
+    }
+
+    #invoice-paper .invoice-print-invoice-wordmark {
+      position: static !important;
+      margin: 0 !important;
+    }
+
+    .invoice-print-header {
+      break-inside: avoid;
+      page-break-inside: avoid;
+    }
+
+    .invoice-print-greeting {
+      break-inside: avoid;
+      page-break-inside: avoid;
+    }
+
+    .invoice-print-summary {
+      break-inside: avoid;
+      page-break-inside: avoid;
+    }
+
+    .invoice-print-summary-after-table {
+      break-before: avoid;
+      page-break-before: avoid;
+      break-inside: auto;
+      page-break-inside: auto;
+    }
+
+    #invoice-paper tbody tr {
+      break-inside: avoid;
+      page-break-inside: avoid;
+    }
+
+    #invoice-paper thead {
+      display: table-header-group;
+    }
+
+    #invoice-paper tfoot {
+      display: table-footer-group;
+    }
+
+    .invoice-footer {
+      break-inside: auto;
+      page-break-inside: auto;
+    }
+  }
+
+  /* Prevent browser-default black focus outlines (“strokes”) */
+  :focus-visible {
+    outline: none;
+  }
+
+  input,
+  select,
+  textarea,
+  button {
+    outline: none;
+  }
+}
+
+/* Issue / Due date fields — project theme; override native calendar chrome where supported */
+@layer components {
+  .form-date-input {
+    appearance: none;
+    -webkit-appearance: none;
+    color-scheme: light;
+    accent-color: #2f51a1;
+    border: 1px solid rgb(226 232 240); /* slate-200 */
+  }
+
+  .form-date-input:focus,
+  .form-date-input:focus-visible {
+    outline: none;
+    border-color: rgb(148 163 184); /* slate-400 */
+    box-shadow: 0 0 0 3px rgb(47 81 161 / 0.14);
+  }
+
+  .form-date-input:active {
+    outline: none;
+    border-color: rgb(148 163 184);
+  }
+
+  .form-date-input::-webkit-calendar-picker-indicator {
+    cursor: pointer;
+    opacity: 0.6;
+    margin-left: 0.25rem;
+    padding: 0.25rem;
+    border-radius: 0.375rem;
+    transition:
+      opacity 0.15s ease,
+      background-color 0.15s ease;
+  }
+
+  .form-date-input:hover::-webkit-calendar-picker-indicator {
+    opacity: 0.85;
+    background-color: rgb(47 81 161 / 0.1);
+  }
+
+  .form-date-input:focus-visible::-webkit-calendar-picker-indicator {
+    opacity: 0.85;
+  }
+
+  .form-date-input::-webkit-datetime-edit,
+  .form-date-input::-webkit-datetime-edit-fields-wrapper {
+    padding: 0;
+  }
+
+  .form-date-input::-webkit-datetime-edit-text,
+  .form-date-input::-webkit-datetime-edit-month-field,
+  .form-date-input::-webkit-datetime-edit-day-field,
+  .form-date-input::-webkit-datetime-edit-year-field {
+    color: #1c1c1c;
+    font-weight: 500;
+  }
+
+  .form-date-input::-webkit-datetime-edit-month-field:focus,
+  .form-date-input::-webkit-datetime-edit-day-field:focus,
+  .form-date-input::-webkit-datetime-edit-year-field:focus {
+    background-color: rgb(47 81 161 / 0.12);
+    color: #2f51a1;
+    outline: none;
+  }
+}
+
+@keyframes slideUpFade {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-slide-up {
+  animation: slideUpFade 280ms ease-out;
+}
+
+/* Invoice preview: preserve tinted backgrounds in print / Save as PDF */
+.invoice-print-exact-colors {
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+
+/* Invoice sheet: natural height, no clipping, predictable breaks (screen + PDF capture) */
+#invoice-paper.invoice-print-paper {
+  min-height: 297mm;
+  height: auto;
+  overflow: visible;
+  page-break-after: auto;
+  break-after: auto;
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+
+#invoice-paper .invoice-print-bill-meta-row {
+  break-inside: avoid;
+  page-break-inside: avoid;
+}
+
+#invoice-paper .invoice-print-line-items {
+  break-inside: auto;
+  page-break-inside: auto;
+}
+
+#invoice-paper tbody.invoice-print-table-body {
+  break-inside: auto;
+  page-break-inside: auto;
+}
+
+#invoice-paper tbody tr {
+  break-inside: avoid;
+  page-break-inside: avoid;
+}
+
+.invoice-print-summary-after-table {
+  break-before: avoid;
+  page-break-before: avoid;
+  break-inside: auto;
+  page-break-inside: auto;
+}
+
+.invoice-footer {
+  break-inside: auto;
+  page-break-inside: auto;
+}
+
+/* Screen + html2canvas: blue band height aligned with print */
+#invoice-paper .invoice-print-blue-header {
+  position: relative;
+  width: 100%;
+  min-height: 200px;
+  box-sizing: border-box;
+  overflow: visible;
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+
+#invoice-paper .invoice-print-blue-header .invoice-print-header-inner {
+  position: relative;
+  z-index: 10;
+  box-sizing: border-box;
+}
+
+#invoice-paper .invoice-print-invoice-wordmark {
+  margin: 0;
+}
+
